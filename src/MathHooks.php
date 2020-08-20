@@ -377,10 +377,26 @@ class MathHooks {
 			$text = preg_replace( '/(<mw:editsection[^>]*>.*?)' . preg_quote( $key ) .
 				'(.*?)<\/mw:editsection>/',
 				'\1 $' . htmlspecialchars( $tag[0]->getTex() ) . '\2</mw:editsection>', $text );
-			$text = str_replace( $key, $value, $text );
+
+			/**
+			 * Fandom change - start
+			 * Original code is removing saved tags after first run
+			 * of onParserAfterTidy, but it can be run many times
+			 * before correct content will be passed. Let's not clear
+			 * it at first usage, and just clear it after it will for sure
+			 * replaced some content.
+			 * @author t-tomalak
+			 * @issue GPUCP-249
+			 */
+			$replaceCount = 0;
+			$text = str_replace( $key, $value, $text, $replaceCount );
+			if ( $replaceCount > 0 ) {
+				unset( self::$tags[$key] );
+			}
 		}
-		// This hook might be called multiple times. However one the tags are rendered the job is done.
-		self::$tags = [];
+		/**
+		 * Fandom change - end
+		 */
 		return true;
 	}
 
