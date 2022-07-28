@@ -365,6 +365,15 @@ class MathRestbaseInterface {
 	}
 
 	public function getMathoidStyle(): ?string {
+		$mathoidStyle = explode( "; ", $this->mathoidStyle );
+		$substr = "max-";
+		foreach ( $mathoidStyle as $key => $string ) {
+			if ( preg_match( '/(width|height)/', $string ) ) {
+				$mathoidStyle[$key] = $substr . $string;
+			}
+		}
+
+		$this->mathoidStyle = implode( '; ', $mathoidStyle );
 		return $this->mathoidStyle;
 	}
 
