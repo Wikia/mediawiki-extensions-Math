@@ -223,10 +223,18 @@ class MathRestbaseInterface {
 	 * @throws MWException
 	 */
 	public function getUrl( $path, $internal = true ) {
-		global $wgMathUseInternalRestbasePath, $wgVirtualRestConfig, $wgMathFullRestbaseURL,
-			$wgVisualEditorFullRestbaseURL;
-		if ( $internal && $wgMathUseInternalRestbasePath && isset( $wgVirtualRestConfig['modules']['restbase'] ) ) {
-			return "/mathoid/local/v1/$path";
+		global $wgMathUseInternalRestbasePath, $wgMathFullRestbaseURL,
+			$wgVisualEditorFullRestbaseURL, $wgMathInternalRestbaseURL;
+
+		// Fandom change: We need to distinguish between internal and external RESTBase(-equivalent) endpoints
+		// so that Math can use the former for internal formula rendering (check) requests
+		// and the latter to generate user facing URLs for rendered SVGs.
+		// However, the default configuration does not allow for this without modifying $wgVirtualRestConfig,
+		// which would in turn interfere with the behavior of the VisualEditor extension.
+		// So, introduce a new configuration variable $wgMathInternalRestbaseURL that can be used to
+		// specify the endpoint to use for internal requests.
+		if ( $internal && $wgMathUseInternalRestbasePath ) {
+			return "{$wgMathInternalRestbaseURL}v1/$path";
 		}
 		if ( $wgMathFullRestbaseURL ) {
 			return "{$wgMathFullRestbaseURL}v1/$path";
@@ -366,11 +374,14 @@ class MathRestbaseInterface {
 	public function getCheckRequest() {
 		return [
 			'method' => 'POST',
-			'body'   => [
+			// Fandom change: Mark this request as internal for compatibility with our facade service.
+			// Also send the request as JSON as this keeps the service side handling simpler.
+			'headers' => [ 'X-Wikia-Internal-Request' => '1', 'Content-Type' => 'application/json' ],
+			'body'   => json_encode( [
 				'type' => $this->type,
 				'q'    => $this->tex
-			],
-			'url'    => $this->getUrl( "media/math/check/{$this->type}" )
+			] ),
+			'url'    => $this->getUrl( "media/math/check/{$this->type}" ),
 		];
 	}
 
@@ -406,15 +417,6 @@ class MathRestbaseInterface {
 	 * @return string
 	 */
 	public function getMathoidStyle() {
-		$mathoidStyle = explode( "; ", $this->mathoidStyle );
-		$substr = "max-";
-		foreach ( $mathoidStyle as $key => $string ) {
-			if ( preg_match( '/(width|height)/', $string ) ) {
-				$mathoidStyle[$key] = $substr . $string;
-			}
-		}
-
-		$this->mathoidStyle = implode( '; ', $mathoidStyle );
 		return $this->mathoidStyle;
 	}
 
