@@ -406,6 +406,7 @@ class MathRestbaseInterface {
 				$this->success = $json->detail->success;
 				$this->error = $json->detail;
 			} else {
+				$this->logger->error("Invalid HTTP {$response['code']} response from RESTBase: {$response['body']}");
 				$this->success = false;
 				$this->setErrorMessage( 'Math extension cannot connect to Restbase.' );
 			}
