@@ -4,7 +4,6 @@ namespace MediaWiki\Extension\Math\WikiTexVC\MMLmappings;
 use MediaWiki\Extension\Math\WikiTexVC\MMLmappings\Lengths\MathSpace;
 use MediaWiki\Extension\Math\WikiTexVC\MMLmappings\TexConstants\Align;
 use MediaWiki\Extension\Math\WikiTexVC\MMLmappings\TexConstants\TexClass;
-use MediaWiki\Extension\Math\WikiTexVC\MMLmappings\TexConstants\Variants;
 use MediaWiki\Extension\Math\WikiTexVC\MMLmappings\Util\MMLutil;
 
 /**
@@ -53,54 +52,6 @@ class AMSMappings {
 		"shoveright" => [ 'HandleShove', Align::RIGHT ],
 		"xrightarrow" => [ 'xArrow', 0x2192, 5, 10 ],
 		"xleftarrow" => [ 'xArrow', 0x2190, 10, 5 ]
-		];
-	private const AMSMATHCHAR0MI = [
-		"digamma" => '\u03DD',
-		"varkappa" => '\u03F0',
-		"varGamma" => [ '\u0393', [ "mathvariant" => Variants::ITALIC ] ],
-		"varDelta" => [ '\u0394', [ "mathvariant" => Variants::ITALIC ] ],
-		"varTheta" => [ '\u0398', [ "mathvariant" => Variants::ITALIC ] ],
-		"varLambda" => [ '\u039B', [ "mathvariant" => Variants::ITALIC ] ],
-		"varXi" => [ '\u039E', [ "mathvariant" => Variants::ITALIC ] ],
-		"varPi" => [ '\u03A0', [ "mathvariant" => Variants::ITALIC ] ],
-		"varSigma" => [ '\u03A3', [ "mathvariant" => Variants::ITALIC ] ],
-		"varStigma" => [ '\u03DB', [ "mathvariant" => Variants::ITALIC ] ],
-		"varUpsilon" => [ '\u03A5', [ "mathvariant" => Variants::ITALIC ] ],
-		"varPhi" => [ '\u03A6', [ "mathvariant" => Variants::ITALIC ] ],
-		"varPsi" => [ '\u03A8', [ "mathvariant" => Variants::ITALIC ] ],
-		"varOmega" => [ '\u03A9', [ "mathvariant" => Variants::ITALIC ] ],
-		"beth" => '\u2136',
-		"gimel" => '\u2137',
-		"daleth" => '\u2138',
-		"backprime" => [ '\u2035', [ "variantForm" => "True" ] ], // actually: "variantForm" => "True"
-		"hslash" => '\u210F',
-		"varnothing" => [ '\u2205', [ "variantForm" => "True" ] ], // actually: "variantForm" => "True"
-		"blacktriangle" => '\u25B4',
-		"triangledown" => [ '\u25BD', [ "variantForm" => "True" ] ], // actually: "variantForm" => "True"
-		"blacktriangledown" => '\u25BE',
-		"square" => '\u25FB',
-		"Box" => '\u25FB',
-		"blacksquare" => '\u25FC',
-		"lozenge" => '\u25CA',
-		"Diamond" => '\u25CA',
-		"blacklozenge" => '\u29EB',
-		"circledS" => [ '\u24C8', [ "mathvariant" => Variants::NORMAL ] ],
-		"bigstar" => '\u2605',
-		"sphericalangle" => '\u2222',
-		"measuredangle" => '\u2221',
-		"nexists" => '\u2204',
-		"complement" => '\u2201',
-		"mho" => '\u2127',
-		"eth" => [ '\u00F0', [ "mathvariant" => Variants::NORMAL ] ],
-		"Finv" => '\u2132',
-		"diagup" => '\u2571',
-		"Game" => '\u2141',
-		"diagdown" => '\u2572',
-		"Bbbk" => [ '\u006B', [ "mathvariant" => Variants::DOUBLESTRUCK ] ],
-		"yen" => '\u00A5',
-		"circledR" => '\u00AE',
-		"checkmark" => '\u2713',
-		"maltese" => '\u2720'
 		];
 	private const AMSMATHCHAR0MO = [
 		"iiiint" => [ '\u2A0C', [ "texClass" => TexClass::OP ] ], // added this mapping from other array
@@ -329,7 +280,8 @@ class AMSMappings {
 		"Bmatrix" => [ 'array', null, '\\{', '\\}', 'c' ],
 		"vmatrix" => [ 'array', null, '\\vert', '\\vert', 'c' ],
 		"Vmatrix" => [ 'array', null, '\\Vert', '\\Vert', 'c' ],
-		"cases" => [ 'array', null, '\\{', '.', 'll', null, '.2em', 'T' ]
+		'cases' => [ 'matrix', '{', '', 'left left', null, '.1em', null, true ],
+		'array' => [ 'matrix' ]
 	];
 	private const AMSSYMBOLDELIMITERS = [
 		'ulcorner' => '\u231C',
@@ -351,7 +303,6 @@ class AMSMappings {
 	];
 	private const ALL = [
 		"amsmathchar0mo" => self::AMSMATHCHAR0MO,
-		"amsmathchar0mi" => self::AMSMATHCHAR0MI,
 		"amsmacros" => self::AMSMACROS,
 		"amssymbolmacros" => self::AMSSYMBOLMACROS,
 		"amsdelimiters" => self::AMSSYMBOLDELIMITERS,
@@ -362,8 +313,8 @@ class AMSMappings {
 		// Just an empty private constructor, for singleton pattern
 	}
 
-	public static function removeInstance() {
-		self::$instance = null;
+	public static function getAll(): array {
+		return self::ALL;
 	}
 
 	public static function getInstance() {
@@ -371,34 +322,26 @@ class AMSMappings {
 		return self::$instance;
 	}
 
-	public static function getEntryFromList( $keylist, $key ) {
-		return self::ALL[$keylist][$key] ?? null;
-	}
-
 	public static function getOperatorByKey( $key ) {
 		// &#x221A; to \\u.... this is only temporary probably entities.php will be refactored with \u vals again
 		$key = MMLutil::x2uNotation( $key );
-		return MMLutil::getMappingByKey( $key, self::AMSMATHCHAR0MO, true );
-	}
-
-	public static function getIdentifierByKey( $key ) {
-		return MMLutil::getMappingByKey( $key, self::AMSMATHCHAR0MI, true );
+		return MMLutil::getMappingByKey( $key, self::AMSMATHCHAR0MO, true, true );
 	}
 
 	public static function getSymbolDelimiterByKey( $key ) {
-		return MMLutil::getMappingByKey( $key, self::AMSSYMBOLDELIMITERS, true );
+		return MMLutil::getMappingByKey( $key, self::AMSSYMBOLDELIMITERS, true, true );
 	}
 
 	public static function getMathDelimiterByKey( $key ) {
-		return MMLutil::getMappingByKey( $key, self::AMSMATHDELIMITERS, true );
+		return MMLutil::getMappingByKey( $key, self::AMSMATHDELIMITERS, true, true );
 	}
 
 	public static function getMacroByKey( $key ) {
-		$ret = MMLutil::getMappingByKey( $key, self::AMSMACROS );
+		$ret = MMLutil::getMappingByKey( $key, self::AMSMACROS, false, true );
 		if ( $ret != null ) {
 			return $ret;
 		}
-		return MMLutil::getMappingByKey( $key, self::AMSSYMBOLMACROS );
+		return MMLutil::getMappingByKey( $key, self::AMSSYMBOLMACROS, true, true );
 	}
 
 	public static function getEnvironmentByKey( $key ) {

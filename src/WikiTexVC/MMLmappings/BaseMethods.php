@@ -12,6 +12,7 @@ use MediaWiki\Extension\Math\WikiTexVC\MMLnodes\MMLmspace;
 use MediaWiki\Extension\Math\WikiTexVC\MMLnodes\MMLmstyle;
 use MediaWiki\Extension\Math\WikiTexVC\MMLnodes\MMLmtext;
 use MediaWiki\Extension\Math\WikiTexVC\Nodes\TexNode;
+use MediaWiki\Extension\Math\WikiTexVC\TexUtil;
 
 /**
  * This contains the basic parsing methods for tex elements, which get invoked
@@ -27,9 +28,6 @@ class BaseMethods {
 		if ( !is_string( $input ) ) {
 			// just discard these elements, sometimes empty TexArray
 			return null;
-		}
-		if ( $prepareInput ) {
-			$input = MMLutil::inputPreparation( $input );
 		}
 
 		// Checking for a named parsing function
@@ -76,9 +74,6 @@ class BaseMethods {
 
 	public function checkAndParseOperator( $input, $node, $passedArgs, $operatorContent,
 										   $state, $prepareInput = true ) {
-		if ( $prepareInput ) {
-			$input = MMLutil::inputPreparation( $input );
-		}
 		$resOperator = BaseMappings::getOperatorByKey( $input );
 		if ( $resOperator == null ) {
 
@@ -158,13 +153,8 @@ class BaseMethods {
 	}
 
 	public function checkAndParseIdentifier( $input, $node, $passedArgs, $operatorContent, $prepareInput = true ) {
-		if ( $prepareInput ) {
-			$input = MMLutil::inputPreparation( $input );
-		}
-		$resIdentifier = BaseMappings::getIdentifierByKey( $input );
-		if ( $resIdentifier == null ) {
-			$resIdentifier = AMSMappings::getIdentifierByKey( $input );
-		}
+		// @phan-suppress-next-line PhanCoalescingNeverUndefined
+		$resIdentifier = TexUtil::getInstance()->identifier( trim( $input ) ) ?? null;
 		// If the macro has been found, dynamically call the associated parsing function.
 		if ( is_string( $resIdentifier ) ) {
 			$resIdentifier = [ $resIdentifier ];
@@ -174,6 +164,7 @@ class BaseMethods {
 			return null;
 		}
 		try {
+			$resIdentifier[0] = MMLutil::uc2xNotation( $resIdentifier[0] );
 			return $this->parseIdentifier( $node, $passedArgs, $operatorContent, $input, ...$resIdentifier );
 		} catch ( ArgumentCountError $errArgcount ) {
 			return null;
@@ -206,7 +197,6 @@ class BaseMethods {
 		$resDelimiter = BaseMappings::getDelimiterByKey( trim( $input ) );
 
 		if ( $resDelimiter == null ) {
-			$input = MMLutil::inputPreparation( $input );
 			$resDelimiter = AMSMappings::getSymbolDelimiterByKey( $input );
 			if ( $resDelimiter == null ) {
 				$resDelimiter = AMSMappings::getMathDelimiterByKey( $input );
@@ -228,9 +218,6 @@ class BaseMethods {
 	}
 
 	public function checkAndParseMathCharacter( $input, $node, $passedArgs, $operatorContent, $prepareInput = true ) {
-		if ( $prepareInput ) {
-			$input = MMLutil::inputPreparation( $input );
-		}
 		$resChar = BaseMappings::getCharacterByKey( $input );
 		if ( $resChar == null ) {
 			return null;
@@ -250,9 +237,6 @@ class BaseMethods {
 			return null;
 		}
 
-		if ( $prepareInput ) {
-			$input = MMLutil::inputPreparation( $input );
-		}
 		if ( !( $input === 'color' || $input === 'pagecolor' ) ) {
 			return null;
 		}
