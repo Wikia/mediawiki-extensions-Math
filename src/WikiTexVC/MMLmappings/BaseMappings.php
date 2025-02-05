@@ -2,11 +2,10 @@
 namespace MediaWiki\Extension\Math\WikiTexVC\MMLmappings;
 
 use MediaWiki\Extension\Math\WikiTexVC\MMLmappings\Lengths\MathSpace;
-use MediaWiki\Extension\Math\WikiTexVC\MMLmappings\TexConstants\Notation;
-use MediaWiki\Extension\Math\WikiTexVC\MMLmappings\TexConstants\Tag;
 use MediaWiki\Extension\Math\WikiTexVC\MMLmappings\TexConstants\TexClass;
 use MediaWiki\Extension\Math\WikiTexVC\MMLmappings\TexConstants\Variants;
 use MediaWiki\Extension\Math\WikiTexVC\MMLmappings\Util\MMLutil;
+use MediaWiki\Extension\Math\WikiTexVC\TexUtil;
 
 /**
  * Based on BaseMappings.js in MML3
@@ -36,73 +35,7 @@ class BaseMappings {
 		'\u2019' => 'prime'
 	];
 
-	private const MATHCHAR0MI = [
-		"alpha" => '\u03B1',
-		"beta" => '\u03B2',
-		"gamma" => '\u03B3',
-		"delta" => '\u03B4',
-		"epsilon" => '\u03F5',
-		"zeta" => '\u03B6',
-		"eta" => '\u03B7',
-		"theta" => '\u03B8',
-		"iota" => '\u03B9',
-		"kappa" => '\u03BA',
-		"lambda" => '\u03BB',
-		"mu" => '\u03BC',
-		"nu" => '\u03BD',
-		"xi" => '\u03BE',
-		"omicron" => '\u03BF',
-		"pi" => '\u03C0',
-		"rho" => '\u03C1',
-		"sigma" => '\u03C3',
-		"tau" => '\u03C4',
-		"upsilon" => '\u03C5',
-		"phi" => '\u03D5',
-		"chi" => '\u03C7',
-		"psi" => '\u03C8',
-		"omega" => '\u03C9',
-		"varepsilon" => '\u03B5',
-		"vartheta" => '\u03D1',
-		"varpi" => '\u03D6',
-		"varrho" => '\u03F1',
-		"varsigma" => '\u03C2',
-		"varstigma" => "\u03DB",
-		"varphi" => '\u03C6',
-		// special case with \\ to distinguish from literal:
-		 "\\S" => [ '\u00A7', [ "mathvariant" => Variants::NORMAL ] ],
-		"aleph" => [ '\u2135', [ "mathvariant" => Variants::NORMAL ] ],
-		"hbar" => [ '\u210F', [ Tag::ALTERNATE => "1" ] ], // actually: "variantForm" => "True"
-		"imath" => '\u0131',
-		"jmath" => '\u0237',
-		"ell" => '\u2113',
-		"wp" => [ '\u2118', [ "mathvariant" => Variants::NORMAL ] ],
-		"Re" => [ '\u211C', [ "mathvariant" => Variants::NORMAL ] ],
-		"Im" => [ '\u2111', [ "mathvariant" => Variants::NORMAL ] ],
-		"partial" => [ '\u2202', [] ], // "mathvariant" => Variants::ITALIC ] this leads to 'wrong' output
-		"infty" => [ '\u221E', [ "mathvariant" => Variants::NORMAL ] ],
-		"prime" => [ '\u2032', [ Tag::ALTERNATE => "1" ] ], // actually: "variantForm" => "True"
-		"emptyset" => [ '\u2205', [ "mathvariant" => Variants::NORMAL ] ],
-		"nabla" => [ '\u2207', [ "mathvariant" => Variants::NORMAL ] ],
-		"top" => [ '\u22A4', [ "mathvariant" => Variants::NORMAL ] ],
-		"bot" => [ '\u22A5', [ "mathvariant" => Variants::NORMAL ] ],
-		"angle" => [ '\u2220', [ "mathvariant" => Variants::NORMAL ] ],
-		"triangle" => [ '\u25B3', [ "mathvariant" => Variants::NORMAL ] ],
-		"backslash" => [ '\u2216', [ "mathvariant" => Variants::NORMAL ] ],
-		"forall" => [ '\u2200', [ "mathvariant" => Variants::NORMAL ] ],
-		"exists" => [ '\u2203', [ "mathvariant" => Variants::NORMAL ] ],
-		"neg" => [ '\u00AC', [ "mathvariant" => Variants::NORMAL ] ],
-		"lnot" => [ '\u00AC', [ "mathvariant" => Variants::NORMAL ] ],
-		"flat" => [ '\u266D', [ "mathvariant" => Variants::NORMAL ] ],
-		"natural" => [ '\u266E', [ "mathvariant" => Variants::NORMAL ] ],
-		"sharp" => [ '\u266F', [ "mathvariant" => Variants::NORMAL ] ],
-		"clubsuit" => [ '\u2663', [ "mathvariant" => Variants::NORMAL ] ],
-		"diamondsuit" => [ '\u2662', [ "mathvariant" => Variants::NORMAL ] ],
-		"heartsuit" => [ '\u2661', [ "mathvariant" => Variants::NORMAL ] ],
-		"spadesuit" => [ '\u2660', [ "mathvariant" => Variants::NORMAL ] ]
-	];
-
 	private const MATHCHAR0MO = [
-		"-" => '\u2212', // added this additionally for running all tc
 		"surd" => '\u221A',
 		"coprod" => [ '\u2210', [ "texClass" => TexClass::OP,
 			"movesupsub" => true ] ],
@@ -477,11 +410,11 @@ class BaseMappings {
 		"lower" => 'raiseLower',
 		"moveleft" => 'MoveLeftRight',
 		"moveright" => 'MoveLeftRight',
-		'\\,' => [ 'spacer', MathSpace::THINMATHSPACE ],
-		"\\'" => [ 'spacer', MathSpace::MEDIUMMATHSPACE ],
-		'\\>' => [ 'spacer', MathSpace::MEDIUMMATHSPACE ],
-		'\\;' => [ 'spacer', MathSpace::THICKMATHSPACE ],
-		'\\!' => [ 'spacer', MathSpace::NEGATIVETHINMATHSPACE ],
+		',' => [ 'spacer', MathSpace::THINMATHSPACE ],
+		"'" => [ 'spacer', MathSpace::MEDIUMMATHSPACE ],
+		'>' => [ 'spacer', MathSpace::MEDIUMMATHSPACE ],
+		';' => [ 'spacer', MathSpace::THICKMATHSPACE ],
+		'!' => [ 'spacer', MathSpace::NEGATIVETHINMATHSPACE ],
 		"enspace" => [ 'spacer', 0.5 ],
 		"quad" => [ 'spacer', 1 ],
 		"qquad" => [ 'spacer', 2 ],
@@ -557,7 +490,7 @@ class BaseMappings {
 		"(0, lengths_js_1.em)(MathSpace::thickmathspace)", '.5em', 'D' ],
 		"displaylines" => [ 'matrix', null, null, 'center', null, '.5em', 'D' ],
 		"cr" => 'Cr',
-		"\\" => 'crLaTeX',
+		"" => 'crLaTeX',
 		"newline" => [ 'crLaTeX', true ],
 		"hline" => [ 'hline', 'solid' ],
 		"hdashline" => [ 'hline', 'dashed' ],
@@ -600,62 +533,10 @@ class BaseMappings {
 		"intent" => 'intent'
 	];
 
-	private const NULLARYMACROS = [
-		"AA" => "\u00C5",
-		"Coppa" => "\u03D8",
-		"Digamma" => "\u03DC",
-		"Koppa" => "\u03DE",
-		"Sampi" => "\u03E0",
-		"Stigma" => "\u03DA",
-		"coppa" => "\u03D9",
-		"euro" => "\u20AC",
-		"geneuro" => "\u20AC",
-		"geneuronarrow" => "\u20AC",
-		"geneurowide" => "\u20AC",
-		"koppa" => "\u03DF",
-		"officialeuro" => "\u20AC",
-		"sampi" => "\u03E1",
-		"stigma" => "\u03DB",
-		"textvisiblespace" => "\u2423"
-	];
-
 	private const ENVIRONMENT = [
 		"array" => [ 'AlignedArray' ],
 		"equation" => [ 'Equation', null, true ],
 		"eqnarray" => [ 'EqnArray', null, true, true, 'rcl', null, '.5em' ]
-	];
-
-	// Mathtools environment actually from Mathtools mappings tbd refactor
-	private const ENVIRONMNENTMT = [
-		'dcases' => [ 'array', null, '\\{', '', 'll', null, '.2em', 'D' ],
-		'rcases' => [ 'array', null, '', '\\}', 'll', null, '.2em' ],
-		'drcases' => [ 'array', null, '', '\\}', 'll', null, '.2em', 'D' ],
-		'dcases*' => [ 'Cases', null, '{', '', 'D' ],
-		'rcases*' => [ 'Cases', null, '', '}' ],
-		'drcases*' => [ 'Cases', null, '', '}', 'D' ],
-		'cases*' => [ 'Cases', null, '{', '' ],
-		'matrix*' => [ 'MtMatrix', null, null, null ],
-		'pmatrix*' => [ 'MtMatrix', null, '(', ')' ],
-		'bmatrix*' => [ 'MtMatrix', null, '[', ']' ],
-		'Bmatrix*' => [ 'MtMatrix', null, '\\{', '\\}' ],
-		'vmatrix*' => [ 'MtMatrix', null, '\\vert', '\\vert' ],
-		'Vmatrix*' => [ 'MtMatrix', null, '\\Vert', '\\Vert' ],
-		'smallmatrix*' => [ 'MtSmallMatrix', null, null, null ],
-		'psmallmatrix' => [ 'MtSmallMatrix', null, '(', ')', 'c' ],
-		'psmallmatrix*' => [ 'MtSmallMatrix', null, '(', ')' ],
-		'bsmallmatrix' => [ 'MtSmallMatrix', null, '[', ']', 'c' ],
-		'bsmallmatrix*' => [ 'MtSmallMatrix', null, '[', ']' ],
-		'Bsmallmatrix' => [ 'MtSmallMatrix', null, '\\{', '\\}', 'c' ],
-		'Bsmallmatrix*' => [ 'MtSmallMatrix', null, '\\{', '\\}' ],
-		'vsmallmatrix' => [ 'MtSmallMatrix', null, '\\vert', '\\vert', 'c' ],
-		'vsmallmatrix*' => [ 'MtSmallMatrix', null, '\\vert', '\\vert' ],
-		'Vsmallmatrix' => [ 'MtSmallMatrix', null, '\\Vert', '\\Vert', 'c' ],
-		'Vsmallmatrix*' => [ 'MtSmallMatrix', null, '\\Vert', '\\Vert' ],
-		'crampedsubarray' => [ 'array', null, null, null, null, '0em', '0.1em', 'S\'', 1 ],
-		'multlined' => 'MtMultlined',
-		'spreadlines' => [ 'SpreadLines', true ],
-		'lgathered' => [ 'amsEqnArray', null, null, null, 'l', null, '.5em', 'D' ],
-		'rgathered' => [ 'amsEqnArray', null, null, null, 'r', null, '.5em', 'D' ],
 	];
 
 	private const COLORS = [
@@ -729,15 +610,6 @@ class BaseMappings {
 		'YellowOrange' => '#FAA21A',
 	];
 
-	// This is from cancelConfiguration.js
-	private const CANCEL = [
-		"cancel" => [ 'cancel', Notation::UPDIAGONALSTRIKE ],
-		"bcancel" => [ 'cancel', Notation::DOWNDIAGONALSTRIKE ],
-		"xcancel" => [ 'cancel', Notation::UPDIAGONALSTRIKE . ' ' .
-			Notation::DOWNDIAGONALSTRIKE ],
-		"cancelto" => [ 'cancelTo', Notation::UPDIAGONALSTRIKE . " " . Notation::UPDIAGONALARROW .
-			" " . Notation::NORTHEASTARROW ]
-	];
 	// They are currently from mhchemConfiguration.js
 	private const MHCHEM = [
 		"ce" => [ 'machine', 'ce' ],
@@ -777,7 +649,7 @@ class BaseMappings {
 		"oiiint" => [ 'oint', '\u2230', [ "texClass" => TexClass::OP ] ],
 		"ointctrclockwise" => [ 'oint', '\u2233', [ "texClass" => TexClass::OP ] ],
 		"varointclockwise" => [ 'oint', '\u2232', [ "texClass" => TexClass::OP ] ],
-		"\\P" => [ 'oint', '\u00B6', [ "texClass" => TexClass::OP ] ],
+		"P" => [ 'oint', '\u00B6', [ "texClass" => TexClass::OP ] ],
 		'textvisiblespace' => [ 'Insert', '\u2423' ], // From TextCompMappings.js (only makro it seems)
 		"Alpha" => [ 'customLetters', "A" ],
 		"Beta" => [ 'customLetters', "B" ],
@@ -800,12 +672,9 @@ class BaseMappings {
 		"macros" => self::MACROS,
 		"delimiter" => self::DELIMITER,
 		"mathchar7" => self::MATCHAR7,
-		"mathchar0mi" => self::MATHCHAR0MI,
 		"mathchar0mo" => self::MATHCHAR0MO,
 		"environment" => self::ENVIRONMENT,
-		"environmentMT" => self::ENVIRONMNENTMT,
 		"colors" => self::COLORS,
-		"cancel" => self::CANCEL,
 		"mhchem" => self::MHCHEM,
 		"custom" => self::CUSTOM
 	];
@@ -814,33 +683,34 @@ class BaseMappings {
 		// Just an empty private constructor, for singleton pattern
 	}
 
-	public static function removeInstance() {
-		self::$instance = null;
+	public static function getAll(): array {
+		$cancelElements = TexUtil::getInstance()->getBaseElements()['cancel_required'];
+		$cancel = [];
+		foreach ( $cancelElements as $name => $value ) {
+			// PhanTypeVoidAssignment Cannot assign void return value
+			// @phan-suppress-next-line PhanCoalescingNeverUndefined
+			$cancel[$name] = TexUtil::getInstance()->callback( $name ) ?? null;
+		}
+		return self::ALL + [ 'cancel' => $cancel ];
 	}
 
-	public static function getInstance() {
+	public static function getInstance(): BaseMappings {
 		self::$instance ??= new BaseMappings();
 		return self::$instance;
 	}
 
-	public static function getEntryFromList( $keylist, $key ) {
-		return self::ALL[$keylist][$key] ?? null;
-	}
-
 	public static function getOperatorByKey( $key ) {
-		return MMLutil::getMappingByKey( $key, self::MATHCHAR0MO, true );
-	}
-
-	public static function getIdentifierByKey( $key ) {
-		return MMLutil::getMappingByKey( $key, self::MATHCHAR0MI, true );
+		if ( $key === '-' ) {
+			return MMLutil::uc2xNotation( '\u2212' ); // added this additionally for running all tests
+		}
+		return MMLutil::getMappingByKey( $key, self::MATHCHAR0MO, true, true );
 	}
 
 	public static function getMacroByKey( $key ) {
-		return MMLutil::getMappingByKeySimple( $key, self::MACROS );
-	}
-
-	public static function getMTenvByKey( $key ) {
-		return MMLutil::getMappingByKeySimple( $key, self::ENVIRONMNENTMT );
+		if ( $key === '\\ ' ) {
+			return self::MACROS[' '];
+		}
+		return MMLutil::getMappingByKeySimple( $key, self::MACROS, true );
 	}
 
 	public static function getSpecialByKey( $key ) {
@@ -853,19 +723,22 @@ class BaseMappings {
 	}
 
 	public static function getCancelByKey( $key ) {
-		return MMLutil::getMappingByKeySimple( $key, self::CANCEL );
+		if ( !TexUtil::getInstance()->cancel_required( $key ) ) {
+			return null;
+		}
+		return TexUtil::getInstance()->callback( $key );
 	}
 
 	public static function getCharacterByKey( $key ) {
-		return MMLutil::getMappingByKeySimple( $key, self::MATCHAR7 );
+		return MMLutil::getMappingByKeySimple( $key, self::MATCHAR7, true );
 	}
 
 	public static function getCustomByKey( $key ) {
-		return MMLutil::getMappingByKeySimple( $key, self::CUSTOM );
+		return MMLutil::getMappingByKeySimple( $key, self::CUSTOM, true );
 	}
 
 	public static function getMhChemByKey( $key ) {
-		return MMLutil::getMappingByKeySimple( $key, self::MHCHEM );
+		return MMLutil::getMappingByKeySimple( $key, self::MHCHEM, true );
 	}
 
 	public static function getColorByKey( $key ) {
@@ -878,7 +751,4 @@ class BaseMappings {
 		return MMLutil::getMappingByKey( $key, self::DELIMITER, true );
 	}
 
-	public static function getNullaryMacro( $key ) {
-		return MMLutil::getMappingByKey( $key, self::NULLARYMACROS, true );
-	}
 }
