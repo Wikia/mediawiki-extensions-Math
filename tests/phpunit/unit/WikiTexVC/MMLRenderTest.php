@@ -291,6 +291,18 @@ class MMLRenderTest extends MediaWikiUnitTestCase {
 		$this->assertStringContainsString( "merror", $mathMLtexVC );
 	}
 
+	public function testEmptySidesetDQ() {
+		$input = "\\sideset{}{}a_b";
+		$mathMLtexVC = $this->generateMML( $input );
+		$this->assertStringNotContainsString( "merror", $mathMLtexVC );
+	}
+
+	public function testEmptySidesetUQ() {
+		$input = "\\sideset{}{}a^b";
+		$mathMLtexVC = $this->generateMML( $input );
+		$this->assertStringNotContainsString( "merror", $mathMLtexVC );
+	}
+
 	public function testSidesetSum() {
 		$input = "\\sideset{_1^2}{_3^4}\\sum";
 		$mathMLtexVC = $this->generateMML( $input );
@@ -502,5 +514,42 @@ class MMLRenderTest extends MediaWikiUnitTestCase {
 		] );
 
 		return MMLTestUtil::getMMLwrapped( $resultT["input"] ) ?? "<math> error texvc </math>";
+	}
+
+	public function testOperatorAccentPlain() {
+		// T384794
+		$input = "\\operatorname{a}'";
+		$mathMLtexVC = $this->generateMML( $input );
+		$posSupEnd = strpos( $mathMLtexVC, "</msup>" );
+		$posFunApply = strpos( $mathMLtexVC, "&#x2061;</mo>" );
+		$posAccent = strpos( $mathMLtexVC, "&#x2032;</mo>" );
+		$posA = strpos( $mathMLtexVC, "a</mi>" );
+		$this->assertGreaterThan( $posSupEnd, $posFunApply, "Function application should be last" );
+		$this->assertGreaterThan( $posAccent, $posSupEnd, "Accent needs to be within msup" );
+		$this->assertGreaterThan( $posA, $posAccent, "Accent should follow a" );
+	}
+
+	public function testOperatorAccentApplied() {
+		// T384794
+		$input = "\\operatorname{a}'x";
+		$mathMLtexVC = $this->generateMML( $input );
+		$this->assertStringContainsString( "mo", $mathMLtexVC );
+		$this->assertStringContainsString( "msup", $mathMLtexVC );
+		$this->assertStringContainsString( "x2061;", $mathMLtexVC );
+	}
+
+	public function testAmsDelim1() {
+		$input = "\\ulcorner a \\urcorner";
+		$mml = $this->generateMML( $input );
+		$this->assertStringContainsString( "&#x231C;", $mml );
+		$this->assertStringContainsString( "&#x231D;", $mml );
+	}
+
+	public function testlVert() {
+		$input = "\\lVert a \\rVert";
+		$mml = $this->generateMML( $input );
+		$this->assertStringContainsString( "&#x2016;", $mml );
+		$this->assertStringNotContainsString( "OPEN", $mml );
+		$this->assertStringNotContainsString( "CLOSE", $mml );
 	}
 }
