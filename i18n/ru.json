@@ -29,13 +29,15 @@
 			"Vlad5250",
 			"Wikisaurus",
 			"Ядерный Трамвай",
-			"Novichev"
+			"Novichev",
+			"Shabe",
+			"Daisy40"
 		]
 	},
 	"math-desc": "Отображает математические формулы в тегах <code>&lt;math&gt;</code> ... <code>&lt;/math&gt;</code>",
 	"popups-settings-option-math": "Математика",
 	"popups-settings-option-math-description": "Объяснение математических формул.",
-	"popups-settings-option-math-tooltip": "Объяснение математических формул при наведении курсора.",
+	"popups-settings-option-math-tooltip": "Объяснение математических формул при наведении курсора",
 	"math-visualeditor-mwchemdialog-title": "Химическая формула",
 	"math-visualeditor-mwlatexcontextitem-quickedit": "Быстрая правка",
 	"math-visualeditor-mwlatexdialog-card-formula": "Формула",
@@ -85,7 +87,10 @@
 	"math-visualeditor-symbol-group-math-symbols": "Символы и константы",
 	"math-visualeditor-symbol-group-math-typefaces": "Типы шрифта",
 	"math-visualeditor-symbol-group-math-unsorted": "Несортированное",
+	"math-form-tex-label": "Пользовательский ввод TeX",
 	"math-form-type-label": "Тип исходных данных",
+	"math-form-type-tex": "tex (обычный ввод)",
+	"math-form-type-chem": "chem (ввод с поддержкой химических формул; например, <code dir=\"ltr\">\\ce{H2O}</code> для воды)",
 	"math_failure": "Невозможно разобрать выражение",
 	"math_invalidjson": "Серверный ответ $1 — в неверном JSON-формате.",
 	"math_invalidresponse": "$1: Недопустимый ответ («$3») от сервера «$2»:",
